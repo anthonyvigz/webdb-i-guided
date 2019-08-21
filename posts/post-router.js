@@ -36,11 +36,33 @@ router.get('/:id', (req, res) => {
 });
 
 router.post('/', (req, res) => {
+    const postData = req.body;
 
+    db('posts').insert(postData)
+    .then(ids => {
+        res.status(201).json({ newPost: ids[0] });
+    })
+    .catch(err => {
+        res.status(500).json({ message: 'Failed to insert post.' })
+    })
 });
 
-router.put('/:id', (req, res) => {
 
+router.put('/:id', (req, res) => {
+    const { id } = req.params;
+    const changes = req.body;
+
+    db('posts').where({ id }).update(changes)
+    .then(count => {
+        if (count) {
+            res.json({ updated: count });
+        } else {
+            res.status(404).json({ message: 'Invalid post ID.' })
+        }
+    })
+    .catch(err => {
+        res.status(500).json({ message: 'Failed to update post.' })
+    })
 });
 
 router.delete('/:id', (req, res) => {
