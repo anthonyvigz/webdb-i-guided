@@ -21,8 +21,14 @@ router.get('/:id', (req, res) => {
     const { id } = req.params;
 
     db('posts').where('id', id)
-    .then((post) => {
-        res.json(post)
+    .then((posts) => {
+        const post = posts[0];
+
+        if (post) {
+            res.json(post);
+        } else {
+            res.status(404).json({ message: 'Invalid post ID' })
+        }
     })
     .catch((error) => {
         res.status(500).json({ message: 'Failed to get post.' })
